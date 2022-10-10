@@ -1,5 +1,5 @@
-var sheet_id = "SHEET ID";
-var sheet_name = "SHEET NAME";
+var sheet_id = "Google sheet id";
+var sheet_name = "Sheet name";
 function doGet(e){
 var ss = SpreadsheetApp.openById(sheet_id);
 var sheet = ss.getSheetByName(sheet_name);
@@ -7,4 +7,5 @@ var sensor = Number(e.parameter.sensor);
 var date = Number(e.parameter.date);
 var link=e.parameter.link+"&query="+String(date)+"%2C"+String(sensor);
 sheet.appendRow([sensor,date,link]);
+//https://www.google.com/maps/search/?api=1&query=47.5951518%2C-122.3316393
 }
