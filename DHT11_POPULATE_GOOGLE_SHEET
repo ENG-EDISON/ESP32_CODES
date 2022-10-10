@@ -1,0 +1,74 @@
+// DHT Temperature & Humidity Sensor
+// Unified Sensor Library Example
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
+#include "WiFi.h"
+#include <HTTPClient.h>
+#define DHTPIN 2     // Connect to Pin GPIO2 of esp32
+#define DHTTYPE    DHT22     // DHT 22 (AM2302)
+
+
+void send_To_Sheet(double humidity,double temperature);
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 19800;
+const int   daylightOffset_sec = 0;
+double temp=0.0,humid=0.0;
+const char* ssid = "****************";         // change SSID
+const char* password = "***************";    // change password
+String GOOGLE_SCRIPT_ID = "************************";    // change Gscript ID
+DHT_Unified dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  dht.begin();
+}
+
+void loop() {
+  sensors_event_t event;
+  dht.temperature().getEvent(&event);
+  if (isnan(event.temperature))
+  {
+    Serial.println(F("Error reading temperature!"));
+  }
+  else
+  {
+    temp=event.temperature;
+  }
+  dht.humidity().getEvent(&event);
+ if(isnan(event.relative_humidity)) 
+  {
+    Serial.println(F("Error reading temperature!"));
+  }
+  else 
+  {
+    humid=event.relative_humidity;
+    send_To_Sheet(humid,temp);
+  }
+  delay(5000);
+}
+void send_To_Sheet(double humidity,double temperature)
+{
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"temp=" + String(humidity) + "&humid=" + String(temperature);
+    HTTPClient http;
+    http.begin(urlFinal.c_str());
+    http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+    int httpCode = http.GET();
+    String payload=" ";
+    if (httpCode > 0)
+    {
+      payload = http.getString();
+      Serial.println("Payload: "+payload);
+      http.end();    
+    }
+  }
+  
+}
