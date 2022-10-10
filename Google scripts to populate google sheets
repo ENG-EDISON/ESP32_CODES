@@ -1,0 +1,10 @@
+var sheet_id = "SHEET ID";
+var sheet_name = "SHEET NAME";
+function doGet(e){
+var ss = SpreadsheetApp.openById(sheet_id);
+var sheet = ss.getSheetByName(sheet_name);
+var sensor = Number(e.parameter.sensor);
+var date = Number(e.parameter.date);
+var link=e.parameter.link+"&query="+String(date)+"%2C"+String(sensor);
+sheet.appendRow([sensor,date,link]);
+}
