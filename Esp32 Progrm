@@ -8,8 +8,8 @@ const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 19800;
 const int   daylightOffset_sec = 0;
 // WiFi credentials
-const char* ssid = "SUPERHUMAN";         // change SSID
-const char* password = "Edie!1994@@";    // change password
+const char* ssid = "WIFI NAME";         // change SSID
+const char* password = "WIFI PASSWORD";    // change password
 // Google script ID and required credentials
 String GOOGLE_SCRIPT_ID = "SCRIPT ID";    // change Gscript ID
 int count = 0;
