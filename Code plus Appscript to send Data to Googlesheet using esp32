@@ -1,0 +1,59 @@
+ESP32 WROOM CODE TO UPLOAD DATA TO GOOGLESHEET
+
+// DHT Temperature & Humidity Sensor
+// Unified Sensor Library Example
+#include "WiFi.h"
+#include <HTTPClient.h>
+
+void send_To_Sheet(double voltage);
+
+const char* ssid = "*************************************";
+const char* password = "***********************************";
+String GOOGLE_SCRIPT_ID = "************************************************";
+
+
+void setup() {
+  Serial.begin(9600);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+}
+
+void loop()
+{
+  send_To_Sheet(2.2);
+  delay(5000);
+}
+
+
+void send_To_Sheet(double voltage)
+{
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    String urlFinal = "https://script.google.com/macros/s/" + GOOGLE_SCRIPT_ID + "/exec?" + "sensor=" + String(voltage);
+    HTTPClient http;
+    http.begin(urlFinal.c_str());
+    http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+    int httpCode = http.GET();
+    String payload = " ";
+    if (httpCode > 0)
+    {
+      payload = http.getString();
+      Serial.println("Payload: " + payload);
+      http.end();
+    }
+  }
+___________________________________________________________________________________________________________________________________________________________________________________________
+}
+APPSCRIPT
+var sheet_id = "*************************************************";
+var sheet_name = "**************************************";
+function doGet(e){
+var ss = SpreadsheetApp.openById(sheet_id);
+var sheet = ss.getSheetByName(sheet_name);
+var sensor = Number(e.parameter.sensor);
+sheet.appendRow([sensor]);
+}
